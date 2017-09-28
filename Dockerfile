@@ -29,7 +29,8 @@ RUN wget -nv -P /srv https://www.kernel.org/pub/linux/kernel/v4.x/linux-$KERNELV
  && rm -f /srv/linux-$KERNELVER.tar.gz
 
 # build kernel modules
-RUN cd /srv/linux-$KERNELVER \
+RUN set -x \
+ && cd /srv/linux-$KERNELVER \
  && make defconfig \
  && ([ ! -f /proc/1/root/proc/config.gz ] || zcat /proc/1/root/proc/config.gz > .config) \
  # enable modules
@@ -44,6 +45,7 @@ RUN cd /srv/linux-$KERNELVER \
  && echo 'CONFIG_USBIP_VHCI_HC_PORTS=8' >> .config \
  && echo 'CONFIG_USBIP_VHCI_NR_HCS=1' >> .config \
  && echo 'CONFIG_USBIP_HOST=m' >> .config \
+ && echo 'CONFIG_XFS_FS=m' >> .config \
  # patch modules
  && sed -i'.bak' '/hcd->amd_resume_bug/{s/^/\/\//;n;s/^/\/\//}' ./drivers/usb/core/hcd-pci.c \
  # build modules
